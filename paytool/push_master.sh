@@ -59,8 +59,6 @@ fi
 echo "Using version: $VERSION"
 echo "Using development branch: $DEV_BRANCH"
 
-exit 1
-
 # 更新 master 分支
 git fetch origin
 git checkout master
