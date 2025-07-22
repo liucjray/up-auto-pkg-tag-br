@@ -2,7 +2,7 @@
 ### 執行 paytool push master
 ```
 cd /home/user/codes/super/paytool;
-sh /home/user/codes/me/mysh/paytool/push_master.sh;
+bash /home/user/codes/me/mysh/paytool/push_master.sh;
 ```
 
 ### push_master.sh 會執行的 git 指令

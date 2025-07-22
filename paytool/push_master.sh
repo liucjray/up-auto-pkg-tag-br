@@ -12,10 +12,41 @@ else
 fi
 
 # 提示輸入版本號
-read -p "Enter the new version number: " VERSION
+read -p "Enter the new version number (e.g., 1.0.0): " VERSION
 if [ -z "$VERSION" ]; then
     echo "Error: Version number cannot be empty"
     exit 1
+fi
+
+# 檢查版本號格式（必須是 X.Y.Z 格式）
+if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    echo "Error: Invalid version format. Use MAJOR.MINOR.PATCH (e.g., 1.0.0)"
+    exit 1
+fi
+
+# 如果有最新標籤，比較版本號
+if [ -n "$LATEST_TAG" ]; then
+    # 移除標籤前的 'v' 前綴（如果存在）
+    LATEST_TAG_CLEAN=${LATEST_TAG#v}
+    
+    # 將版本號分解為數字部分
+    IFS=$'.' read -r -a latest_parts <<< "$LATEST_TAG_CLEAN"
+    IFS=$'.' read -r -a new_parts <<< "$VERSION"
+
+    # 比較 MAJOR, MINOR, PATCH
+    for ((i=0; i<3; i++)); do
+        latest_num=${latest_parts[$i]:-0}
+        new_num=${new_parts[$i]:-0}
+        if [ "$new_num" -gt "$latest_num" ]; then
+            break
+        elif [ "$new_num" -lt "$latest_num" ]; then
+            echo "Error: New version ($VERSION) must be higher than latest version ($LATEST_TAG)"
+            exit 1
+        elif [ $i -eq 2 ]; then
+            echo "Error: New version ($VERSION) must be higher than latest version ($LATEST_TAG)"
+            exit 1
+        fi
+    done
 fi
 
 # 提示輸入開發分支名稱
@@ -27,6 +58,8 @@ fi
 
 echo "Using version: $VERSION"
 echo "Using development branch: $DEV_BRANCH"
+
+exit 1
 
 # 更新 master 分支
 git fetch origin
