@@ -1,0 +1,5 @@
+# 確保所有檔案使用 LF 行尾
+* text=auto eol=lf
+
+# 明確指定 .sh 檔案使用 LF
+*.sh text eol=lf
