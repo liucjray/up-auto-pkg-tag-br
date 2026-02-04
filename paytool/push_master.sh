@@ -3,7 +3,17 @@
 # 顯示目前的 tag 版本號
 echo "Fetching tags..."
 git fetch --tag
-LATEST_TAG=$(git tag --sort=-v:refname | head -n 1)
+
+# 找出異常的 tags（不符合 vX.Y.Z 格式）
+INVALID_TAGS=$(git tag | grep -vE '^v[0-9]+\.[0-9]+\.[0-9]+$')
+if [ -n "$INVALID_TAGS" ]; then
+    echo "Warning: Found invalid tags (not matching vX.Y.Z format):"
+    echo "$INVALID_TAGS" | sed 's/^/  - /'
+    echo ""
+fi
+
+# 只取正確格式的 tags
+LATEST_TAG=$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
 
 if [ -z "$LATEST_TAG" ]; then
     echo "No tags found in the repository"
